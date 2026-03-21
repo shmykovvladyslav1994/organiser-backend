@@ -15,6 +15,17 @@ namespace backend.Controllers
             return tasks;
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetTask(Guid id)
+        {
+            var task = tasks.FirstOrDefault(t => t.Id == id);
+            if (task == null)
+            {
+                return NotFound();
+            }
+            return Ok(task);
+        }
+
         [HttpPost]
         public IActionResult CreateTask(TaskItem task)
         {
@@ -23,8 +34,8 @@ namespace backend.Controllers
             return Ok(new CreatedTaskResponse { Id = task.Id });
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateTask(Guid id, TaskItem updatedTask)
+        [HttpPatch("{id}")]
+        public IActionResult UpdateTask(Guid id, UpdateTaskDto updatedTask)
         {
             var task = tasks.FirstOrDefault(t => t.Id == id);
 
@@ -33,10 +44,32 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            task.Title = updatedTask.Title;
-            task.IsDone = updatedTask.IsDone;
+            task.Title = updatedTask.Title ?? task.Title;
+            task.IsDone = updatedTask.IsDone ?? task.IsDone;
 
             return Ok(task);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteTask(Guid id)
+        {
+            var task = tasks.FirstOrDefault(t => t.Id == id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            tasks.Remove(task);
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteAllTasks()
+        {
+            tasks.Clear();
+            return NoContent();
         }
     }
 }
