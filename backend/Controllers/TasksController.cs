@@ -1,5 +1,7 @@
 ﻿using backend.Models;
+using backend.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -7,18 +9,24 @@ namespace backend.Controllers
     [Route("tasks")]
     public class TasksController : Controller
     {
-        private static List<TaskItem> tasks = new List<TaskItem>();
+        private readonly AppDbContext _context;
+        public TasksController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        //public static List<TaskItem> tasks = new List<TaskItem>();
 
         [HttpGet]
-        public IEnumerable<TaskItem> GetTasks()
+        public async Task<IEnumerable<TaskItem>> GetTasks()
         {
-            return tasks;
+            return await _context.Tasks.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetTask(Guid id)
+        public async Task<IActionResult> GetTask(Guid id)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var task = await _context.Tasks.FindAsync(id);
             if (task == null)
             {
                 return NotFound();
@@ -27,48 +35,60 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTask(TaskItem task)
+        public async Task<IActionResult> CreateTask(TaskItem task)
         {
-            task.Id = Guid.NewGuid();
-            tasks.Add(task);
-            return Ok(new CreatedTaskResponse { Id = task.Id });
+            _context.Tasks.Add(task);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { id = task.Id });
         }
 
         [HttpPatch("{id}")]
-        public IActionResult UpdateTask(Guid id, UpdateTaskDto updatedTask)
+        public async Task<IActionResult> UpdateTask(Guid id, UpdateTaskDto updatedTask)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var task = await _context.Tasks.FindAsync(id);
 
             if (task == null)
             {
                 return NotFound();
             }
 
-            task.Title = updatedTask.Title ?? task.Title;
-            task.IsDone = updatedTask.IsDone ?? task.IsDone;
+            if (!string.IsNullOrEmpty(updatedTask.Title))
+                task.Title = updatedTask.Title;
+
+            if (updatedTask.IsDone.HasValue)
+                task.IsDone = updatedTask.IsDone.Value;
+
+            await _context.SaveChangesAsync();
 
             return Ok(task);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteTask(Guid id)
+        public async Task<IActionResult> DeleteTask(Guid id)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var task = await _context.Tasks.FindAsync(id);
 
             if (task == null)
-            {
                 return NotFound();
-            }
 
-            tasks.Remove(task);
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpDelete]
-        public IActionResult DeleteAllTasks()
+        public async Task<IActionResult> DeleteAllTasks()
         {
-            tasks.Clear();
+            var allTasks = _context.Tasks.ToList();
+
+            if (!allTasks.Any())
+                return NoContent();
+
+            _context.Tasks.RemoveRange(allTasks);
+            await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }

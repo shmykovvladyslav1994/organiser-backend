@@ -5,7 +5,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // CORS
-// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",

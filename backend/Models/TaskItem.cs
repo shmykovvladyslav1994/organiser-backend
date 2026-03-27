@@ -2,8 +2,8 @@
 {
     public class TaskItem
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string Title { get; set; } = string.Empty;
+        public Guid Id { get; set; }
+        public string? Title { get; set; }
         public bool IsDone { get; internal set; }
     }
 }

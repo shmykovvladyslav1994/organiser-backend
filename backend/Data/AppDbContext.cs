@@ -10,6 +10,13 @@ namespace backend.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TaskItem>()
+                .Property(t => t.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
+        }
+
         // Таблица Tasks в базе данных
         public DbSet<TaskItem> Tasks { get; set; }
     }
