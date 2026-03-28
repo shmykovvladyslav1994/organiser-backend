@@ -2,6 +2,7 @@ using backend.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 
 // Add services to the container.
 // CORS
@@ -24,7 +25,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
-
+app.Urls.Add($"http://*:{port}");
 app.UseCors("AllowReactApp"); // <-- включаем CORS
 
 // Configure the HTTP request pipeline.

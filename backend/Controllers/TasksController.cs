@@ -15,8 +15,6 @@ namespace backend.Controllers
             _context = context;
         }
 
-        //public static List<TaskItem> tasks = new List<TaskItem>();
-
         [HttpGet]
         public async Task<IEnumerable<TaskItem>> GetTasks()
         {
