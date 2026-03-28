@@ -38,6 +38,17 @@ var app = builder.Build();
 app.Urls.Add($"http://*:{port}");
 app.UseCors("AllowReactApp"); // <-- включаем CORS
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var error = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        Console.WriteLine(error?.Error);
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("Internal Server Error");
+    });
+});
+
 // Configure middleware
 if (app.Environment.IsDevelopment())
 {
