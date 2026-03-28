@@ -32,6 +32,19 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+var connStr = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+try
+{
+    using var conn = new Npgsql.NpgsqlConnection(connStr);
+    conn.Open();
+    Console.WriteLine("✅ Подключение прошло!");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("❌ Ошибка подключения: " + ex.Message);
+}
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
