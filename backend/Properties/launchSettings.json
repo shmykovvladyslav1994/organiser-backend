@@ -7,8 +7,7 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5044",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "DATABASE_URL": "Host=db.ftfwbxndgoaxyqwjqouj.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=9#$saW-U!c#iz&7;SSL Mode=Require;Trust Server Certificate=true;"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

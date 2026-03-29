@@ -2,6 +2,7 @@ using backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
+AppContext.SetSwitch("System.Net.DisableIPv6", true);
 var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 
@@ -29,21 +30,29 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-var connStr = Environment.GetEnvironmentVariable("DATABASE_URL");
+var csBuilder = new Npgsql.NpgsqlConnectionStringBuilder
+{
+    Host = "db.ftfwbxndgoaxyqwjqouj.supabase.co",
+    Port = 5432,
+    Database = "postgres",
+    Username = "postgres",
+    Password = "9#$saW-U!c#iz&7",
+    SslMode = Npgsql.SslMode.Require
+};
 
 try
 {
-    using var conn = new Npgsql.NpgsqlConnection(connStr);
+    using var conn = new Npgsql.NpgsqlConnection(csBuilder.ConnectionString);
     conn.Open();
-    Console.WriteLine("✅ Подключение прошло!");
+    Console.WriteLine("✅ DB OK");
 }
 catch (Exception ex)
 {
-    Console.WriteLine("❌ Ошибка подключения: " + ex.Message);
+    Console.WriteLine("❌ DB FAIL: " + ex.ToString());
 }
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(csBuilder.ConnectionString));
 
 builder.Services.AddControllers();
 
