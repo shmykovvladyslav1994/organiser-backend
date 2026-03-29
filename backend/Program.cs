@@ -2,7 +2,6 @@ using backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
-AppContext.SetSwitch("System.Net.DisableIPv6", true);
 var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 
