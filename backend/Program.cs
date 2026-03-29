@@ -29,29 +29,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var csBuilder = new Npgsql.NpgsqlConnectionStringBuilder
-{
-    Host = "db.ftfwbxndgoaxyqwjqouj.supabase.co",
-    Port = 5432,
-    Database = "postgres",
-    Username = "postgres",
-    Password = "9#$saW-U!c#iz&7",
-    SslMode = Npgsql.SslMode.Require
-};
-
-try
-{
-    using var conn = new Npgsql.NpgsqlConnection(csBuilder.ConnectionString);
-    conn.Open();
-    Console.WriteLine("✅ DB OK");
-}
-catch (Exception ex)
-{
-    Console.WriteLine("❌ DB FAIL: " + ex.ToString());
-}
-
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(csBuilder.ConnectionString));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddControllers();
 
